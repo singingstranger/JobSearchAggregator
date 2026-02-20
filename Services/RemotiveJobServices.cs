@@ -35,21 +35,10 @@ public class RemotiveJobServices
                 Title = j.Title,
                 Company = j.Company_Name,
                 Location = j.Candidate_Required_Location,
-                PostedDate = j.Publication_Date
+                PostedDate = j.Publication_Date,
+                Source = "Remotive",
+                OriginalURL = j.Url
             });
-        /*using var doc = JsonDocument.Parse(content);
-        var jobs = doc.RootElement.GetProperty("jobs");
-        var results = new List<JobDTO>();
-        foreach (var job in jobs.EnumerateArray())
-        {
-            results.Add(new JobDTO
-            {
-                Title = job.GetProperty("title").GetString() ?? "No Title",
-                Company = job.GetProperty("company_name").GetString() ?? "No Company",
-                Location = jobs.GetProperty("candidate_required_location").GetString() ?? "Remote",
-                PostedDate = jobs.GetProperty("publication_date").GetDateTime()
-            });
-        }
-        return results;*/
+        
     }
 }

@@ -6,4 +6,5 @@ public class RemotiveJob
     public string Company_Name { get; set; } = string.Empty;
     public string Candidate_Required_Location { get; set; } = string.Empty;
     public DateTime Publication_Date { get; set; }
+    public string Url { get; set; } 
 }

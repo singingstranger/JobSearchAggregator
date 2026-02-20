@@ -17,20 +17,22 @@ public class AdzunaJobService
 
     public async Task<IEnumerable<JobDTO>> SearchJobsAsync(string keyword)
     {
-        var appID = _configuration["Adzuna:AppID"];
-        var appKey = _configuration["Adzuna:Key"];
+        var appId = _configuration["Adzuna:AppID"];
+        var appKey = _configuration["Adzuna:AppKey"];
         
-        var url = 
+        var url =
             $"https://api.adzuna.com/v1/api/jobs/gb/search/1" +
-            $"?app_id={appID}" +
+            $"?app_id={appId}" +
             $"&app_key={appKey}" +
-            $"&what={keyword}" +
-            $"&content-type=application/json";
+            $"&what={Uri.EscapeDataString(keyword)}";
+        
         var response = await _httpClient.GetAsync(url);
         if (!response.IsSuccessStatusCode)
             return Enumerable.Empty<JobDTO>();
 
-        var content = await response.Content.ReadAsStringAsync();
+        var bytes = await response.Content.ReadAsByteArrayAsync();
+        var content = System.Text.Encoding.UTF8.GetString(bytes);
+        
         var options = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
@@ -47,8 +49,9 @@ public class AdzunaJobService
                     Title = j.Title,
                     Company = j.Company.Display_Name,
                     Location = j.Location.Display_Name,
-                    PostedDate = j.Created
-                        
+                    PostedDate = j.Created,
+                    Source = "Adzuna",
+                    OriginalURL = j.Redirect_Url
                 }
             );
     }
