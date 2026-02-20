@@ -51,7 +51,9 @@ public class AdzunaJobService
                     Location = j.Location.Display_Name,
                     PostedDate = j.Created,
                     Source = "Adzuna",
-                    OriginalURL = j.Redirect_Url
+                    OriginalURL = string.IsNullOrWhiteSpace(j.Redirect_Url) 
+                        ? "https://www.adzuna.co.uk/" 
+                        : j.Redirect_Url
                 }
             );
     }
