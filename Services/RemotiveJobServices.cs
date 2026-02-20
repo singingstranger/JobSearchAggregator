@@ -29,7 +29,7 @@ public class RemotiveJobServices
             return Enumerable.Empty<JobDTO>();
 
         return remotiveResponse.Jobs
-            .Where(j => j.Publication_Date.Date >= DateTime.UtcNow.AddDays(-2))
+            .Where(j => j.Publication_Date.Date >= DateTime.UtcNow.AddDays(-10))
             .Select(j => new JobDTO
             {
                 Title = j.Title,

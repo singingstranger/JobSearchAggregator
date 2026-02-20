@@ -11,6 +11,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<RemotiveJobServices>();
+builder.Services.AddScoped<AdzunaJobService>();
 
 var app = builder.Build();
 
