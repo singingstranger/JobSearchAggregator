@@ -43,7 +43,9 @@ public class AdzunaJobService
             return Enumerable.Empty<JobDTO>();
         }
 
-        return adzunaResponse.Results
+        var filteredJobs = adzunaResponse.Results.Where(j => !string.IsNullOrWhiteSpace(j.Redirect_Url));
+        
+        return filteredJobs
             .Select(j => new JobDTO
                 {
                     Title = j.Title,
