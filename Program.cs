@@ -10,6 +10,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddHttpClient();
+builder.Services.AddScoped<RemotiveJobServices>();
 
 var app = builder.Build();
 
