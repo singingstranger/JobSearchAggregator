@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace JobSearchAPI.Models.Remotive;
 
 public class RemotiveJob
@@ -7,4 +9,7 @@ public class RemotiveJob
     public string Candidate_Required_Location { get; set; } = string.Empty;
     public DateTime Publication_Date { get; set; }
     public string Url { get; set; } 
+    public string? Salary { get; set; }
+    [JsonPropertyName("job_type")]
+    public string? JobType { get; set; }
 }

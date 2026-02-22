@@ -8,4 +8,8 @@ public class JobDTO
     public DateTime PostedDate { get; set; }
     public string Source { get; set; }
     public string OriginalURL { get; set; }
+    public decimal? MinSalary { get; set; }
+    public decimal? MaxSalary { get; set; }
+    public string JobType { get; set; }
+    public bool IsRemote { get; set; }
 }

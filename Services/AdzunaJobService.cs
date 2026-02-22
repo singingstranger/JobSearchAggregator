@@ -1,4 +1,5 @@
 using System.Text.Json;
+using JobSearchAPI.Controllers;
 using JobSearchAPI.Models;
 using JobSearchAPI.Models.Adzuna;
 
@@ -15,7 +16,7 @@ public class AdzunaJobService
         _configuration = configuration;
     }
 
-    public async Task<IEnumerable<JobDTO>> SearchJobsAsync(string keyword)
+    public async Task<IEnumerable<JobDTO>> SearchJobsAsync(JobSearchRequest request)
     {
         var appId = _configuration["Adzuna:AppID"];
         var appKey = _configuration["Adzuna:AppKey"];
@@ -24,7 +25,7 @@ public class AdzunaJobService
             $"https://api.adzuna.com/v1/api/jobs/gb/search/1" +
             $"?app_id={appId}" +
             $"&app_key={appKey}" +
-            $"&what={Uri.EscapeDataString(keyword)}";
+            $"&what={Uri.EscapeDataString(request.Keyword)}";
         
         var response = await _httpClient.GetAsync(url);
         if (!response.IsSuccessStatusCode)
@@ -43,7 +44,7 @@ public class AdzunaJobService
             return Enumerable.Empty<JobDTO>();
         }
 
-        var filteredJobs = adzunaResponse.Results.Where(j => !string.IsNullOrWhiteSpace(j.Redirect_Url));
+        var filteredJobs = adzunaResponse.Results.Where(j => !string.IsNullOrWhiteSpace(j.RedirectUrl));
         
         return filteredJobs
             .Select(j => new JobDTO
@@ -52,10 +53,14 @@ public class AdzunaJobService
                     Company = j.Company.Display_Name,
                     Location = j.Location.Display_Name,
                     PostedDate = j.Created,
+                    MinSalary = j.SalaryMin,
+                    MaxSalary = j.SalaryMax,
+                    JobType = j.ContractType,
+                    IsRemote = j.Location.Display_Name.Contains("Remote", StringComparison.OrdinalIgnoreCase),
                     Source = "Adzuna",
-                    OriginalURL = string.IsNullOrWhiteSpace(j.Redirect_Url) 
+                    OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl) 
                         ? "https://www.adzuna.co.uk/" 
-                        : j.Redirect_Url
+                        : j.RedirectUrl
                 }
             );
     }
