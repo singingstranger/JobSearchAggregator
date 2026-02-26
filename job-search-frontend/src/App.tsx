@@ -15,41 +15,76 @@ type Job ={
 }
 function App(){
     const [jobs, setJobs] = useState<Job[]>([]);
+    
     const [keyword, setKeyword] = useState("");
     const [location, setLocation] = useState("");
+    const [daysBack, setDaysBack] = useState(3);
 
-    /*useEffect(() => {
-        fetch("http://localhost:5086/api/jobs?keyword=developer&page=1&pageSize=5")
-            .then(res => res.json())
-            .then(data => setJobs(data))
-            .catch(err => console.log(err))
-    }, []);*/
-    const searchJobs = async (e: React.InputEvent) => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const searchJobs = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=5`
-        );
-        const data = await response.json();
-        setJobs(data);
+
+        setIsLoading(true);
+        setError(null);
+        try{
+            const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=5`
+            );
+            if(!response.ok)
+            {
+                throw new Error("Something went wrong, please try again later!");
+            }
+            const data = await response.json();
+            setJobs(data);
+        } catch(error: any){
+            setError(error.message);
+        } finally{
+            setIsLoading(false);
+        }
     };
     return (
         <div>
             <h1> Job Search </h1>
             <form onSubmit={searchJobs} style={{ marginBottom: "20%" }}>
-                <input type="text" 
-                       placeholder="Job keyword"
-                       value={keyword}
-                       onChange={(e) => setKeyword(e.target.value)}
-                />
                 
-                <input type="text"
-                       placeholder="Location"
-                       value={location}
-                       onChange={(e) => setLocation(e.target.value)}
-                       style={{ marginLeft: "20px" }}
-                />
+                <label style={{ marginLeft: "20px" }}>
+                    Keyword: 
+                    <input 
+                        type="text"
+                        placeholder="Developer, Dentist..."
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                        style={{ marginLeft: "5px" }}
+                    />
+                </label>
+                <label style={{ marginLeft: "20px" }}>
+                    Location:
+                    <input 
+                        type="text"
+                        placeholder="i.e. London"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                        style={{ marginLeft: "5px" }}
+                    />
+                </label>
+                
+                <label style={{ marginLeft: "20px" }}>
+                    Days back:
+                    <input
+                        type="number"
+                        value={daysBack}
+                        onChange={(e) => setDaysBack(Number(e.target.value))}
+                        min={1}
+                        style={{ marginLeft: "5px" }}
+                    />
+                </label>
+                <p></p>
                 <button type="submit" style={{marginLeft: "10px"}}>Search</button>
-                
+
             </form>
+            {isLoading && <div className="spinner"></div> }
+            {error && <div className="error" style={{color: "red"}}>{error}</div>}
             {jobs.map(job =>(
                 <div key={job.originalURL} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
                     <h3> 
@@ -66,35 +101,5 @@ function App(){
         </div>
     );
 }
-
-/*
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}*/
 
 export default App
