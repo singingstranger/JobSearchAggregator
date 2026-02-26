@@ -1,6 +1,3 @@
-/*import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'*/
 import { useEffect, useState } from "react";
 import './App.css'
 
@@ -18,16 +15,41 @@ type Job ={
 }
 function App(){
     const [jobs, setJobs] = useState<Job[]>([]);
+    const [keyword, setKeyword] = useState("");
+    const [location, setLocation] = useState("");
 
-    useEffect(() => {
+    /*useEffect(() => {
         fetch("http://localhost:5086/api/jobs?keyword=developer&page=1&pageSize=5")
             .then(res => res.json())
             .then(data => setJobs(data))
             .catch(err => console.log(err))
-    }, []);
+    }, []);*/
+    const searchJobs = async (e: React.InputEvent) => {
+        e.preventDefault()
+        const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=5`
+        );
+        const data = await response.json();
+        setJobs(data);
+    };
     return (
         <div>
             <h1> Job Search </h1>
+            <form onSubmit={searchJobs} style={{ marginBottom: "20%" }}>
+                <input type="text" 
+                       placeholder="Job keyword"
+                       value={keyword}
+                       onChange={(e) => setKeyword(e.target.value)}
+                />
+                
+                <input type="text"
+                       placeholder="Location"
+                       value={location}
+                       onChange={(e) => setLocation(e.target.value)}
+                       style={{ marginLeft: "20px" }}
+                />
+                <button type="submit" style={{marginLeft: "10px"}}>Search</button>
+                
+            </form>
             {jobs.map(job =>(
                 <div key={job.originalURL} style={{ border: "1px solid gray", margin: "10px", padding: "10px" }}>
                     <h3> 
