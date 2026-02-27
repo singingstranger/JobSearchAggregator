@@ -29,7 +29,7 @@ function App(){
         setIsLoading(true);
         setError(null);
         try{
-            const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=5`
+            const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=${daysBack}`
             );
             if(!response.ok)
             {
@@ -110,7 +110,23 @@ function App(){
                         <p className="mt-4 text-gray-500">Searching jobs...</p>
                     </div>
                 )}
-                {error && <div className="error" style={{color: "red"}}>{error}</div>}
+                {error && (
+                    <div className="animate-fadeIn mb-6 rounded-xl border border-red-200 bg-red-50 p-4 shadow-sm">
+                        <div className="flex items-start gap-3">
+                            <div className="text-red-500 mt-1">
+                                ⚠️
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-red-700">
+                                    Something went wrong
+                                </h4>
+                                <p className="text-sm text-red-600 mt-1">
+                                    {error}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
                 {!isLoading && jobs.length === 0 && (
                     <div className="text-center text-purple-400 mt-12">
                         No jobs found. Try adjusting your search.
@@ -121,6 +137,7 @@ function App(){
                         key={job.originalURL}
                         href={job.originalURL}
                         target="_blank"
+                        rel="noopener noreferrer"
                         style={{ animationDelay: `${index * 80}ms` }}
                         className="relative animate-fadeIn block bg-white rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-gray-100 mb-6"
                     >
@@ -146,11 +163,13 @@ function App(){
                                 </p>
 
                                 <p className="text-gray-400 text-sm mt-2">
-                                    Posted: {new Date(job.postedDate).toLocaleDateString()}
+                                    Posted: {job.postedDate
+                                    ? new Date(job.postedDate).toLocaleDateString()
+                                    : "Date not available"}
                                 </p>
                             </div>
 
-                            {/* RIGHT SIDE*/}
+                            {/* RIGHT SIDE */}
                             <div className="flex flex-wrap gap-2 items-start md:items-center">
 
                                 <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
@@ -158,7 +177,7 @@ function App(){
                                 </span>
 
                                 <span className="bg-purple-50 text-purple-400 text-xs font-semibold px-3 py-1 rounded-full border border-purple-700">
-                                    {job.minSalary && job.maxSalary 
+                                    {job.minSalary != null && job.maxSalary != null
                                         ? `£${job.minSalary} - £${job.maxSalary}` 
                                         : "Salary not provided"} 
                                 </span>
