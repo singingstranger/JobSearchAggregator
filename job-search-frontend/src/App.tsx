@@ -44,79 +44,128 @@ function App(){
         }
     };
     return (
-        <div className="min-h-screen bg-gray-100 p-8">
-            <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-6"> Job Search </h1>
-                <form onSubmit={searchJobs} className="flex flex-wrap gap-4 mb-6">
-                    
-                    <label>
-                        Keyword: 
-                        <input 
+        <div className="text-center mb-12 relative pt-24 md:pt-32">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-50 via-white to-purple-50 rounded-3xl"></div>
+            <div className="relative z-10 max-w-3xl mx-auto">
+                <div className="mb-6">
+                    <span className="text-4xl md:text-5xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-emerald-500 via-blue-200 to-purple-600">
+                        JJA
+                    </span>
+                </div>
+                <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 mb-4">
+                    Find Your Next Opportunity
+                </h1>
+                <p className="text-lg md:text-xl text-gray-700 mb-6">
+                    Browse thousands of jobs, filter by keyword and location, and discover your next role.
+                </p>
+                <div className="mt-6 h-1 w-24 bg-blue-500 rounded-full mx-auto"></div>
+                
+                <form
+                    onSubmit={searchJobs}
+                    className="animate-fadeIn bg-white p-6 rounded-2xl shadow-xl mb-10 flex flex-col md:flex-row gap-4 md:items-end md:justify-between"
+                >
+                    <div className="flex flex-col flex-1">
+                        <label className="text-gray-700 font-medium mb-1">Keyword</label>
+                        <input
                             type="text"
                             placeholder="Developer, Dentist..."
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
-                            className="border rounded-lg px-4 py-2 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
                         />
-                    </label>
-                    <label style={{ marginLeft: "20px" }}>
-                        Location:
-                        <input 
+                    </div>
+
+                    <div className="flex flex-col flex-1">
+                        <label className="text-gray-700 font-medium mb-1">Location</label>
+                        <input
                             type="text"
                             placeholder="i.e. London"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
-                            className="border rounded-lg px-4 py-2 w-48 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
                         />
-                    </label>
-                    
-                    <label style={{ marginLeft: "20px" }}>
-                        Days back:
+                    </div>
+
+                    <div className="flex flex-col w-32">
+                        <label className="text-gray-700 font-medium mb-1">Days back</label>
                         <input
                             type="number"
                             value={daysBack}
-                            onChange={(e) => setDaysBack(Number(e.target.value))}
                             min={1}
-                            className="border rounded-lg px-4 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => setDaysBack(Number(e.target.value))}
+                            className="border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-400 transition"
                         />
-                    </label>
-                    <p></p>
-                    <button 
-                        type="submit" 
-                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="bg-gradient-to-r from-purple-500 to-purple-700 text-white px-8 py-3 rounded-xl font-semibold hover:scale-105 hover:shadow-lg transition"
                     >
                         Search
                     </button>
-    
                 </form>
                 {isLoading && (
-                    <div className="flex justify-center my-6">
-                        <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div className="flex flex-col items-center my-10">
+                        <div className="h-12 w-12 border-4 border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="mt-4 text-gray-500">Searching jobs...</p>
                     </div>
                 )}
                 {error && <div className="error" style={{color: "red"}}>{error}</div>}
-                {jobs.map(job =>(
-                    <div
-                        key={job.originalURL}
-                        className="border rounded-lg p-4 shadow-sm hover:shadow-md transition mb-4"
-                    >
-                        <h3 className="text-lg font-semibold text-blue-600">
-                            <a href={job.originalURL} target="_blank">
-                                {job.title}
-                            </a>
-                        </h3>
-                        <p className="text-gray-600">
-                            {job.company} — {job.location}
-                        </p>
-                        <p className="text-gray-500 text-sm mt-1">
-                            {job.minSalary && job.maxSalary
-                                ? `£${job.minSalary} - £${job.maxSalary}`
-                                : "Salary not listed"}
-                        </p>
-                        <p className="text-sm mt-2">
-                            {job.isRemote ? "Remote" : "On-site/Hybrid"} • {job.source}
-                        </p>
+                {!isLoading && jobs.length === 0 && (
+                    <div className="text-center text-purple-400 mt-12">
+                        No jobs found. Try adjusting your search.
                     </div>
+                )}
+                {jobs.map((job, index) => (
+                    <a
+                        key={job.originalURL}
+                        href={job.originalURL}
+                        target="_blank"
+                        style={{ animationDelay: `${index * 80}ms` }}
+                        className="relative animate-fadeIn block bg-white rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition duration-300 border border-gray-100 mb-6"
+                    >
+                        {job.isRemote && (
+                            <span className="absolute top-4 right-4 bg-emerald-100 text-emerald-700 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-200">
+                                Remote
+                            </span>
+                        )}
+                        <div className="flex flex-col md:flex-row justify-between gap-6">
+
+                            {/* LEFT SIDE */}
+                            <div className="flex-1 text-left">
+                                <h3 className="text-xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-purple-700">
+                                    {job.title}
+                                </h3>
+
+                                <p className="text-gray-700 font-medium">
+                                    {job.company}
+                                </p>
+
+                                <p className="text-gray-500 text-sm">
+                                    {job.location}
+                                </p>
+
+                                <p className="text-gray-400 text-sm mt-2">
+                                    Posted: {new Date(job.postedDate).toLocaleDateString()}
+                                </p>
+                            </div>
+
+                            {/* RIGHT SIDE*/}
+                            <div className="flex flex-wrap gap-2 items-start md:items-center">
+
+                                <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-3 py-1 rounded-full">
+                                    {job.source}
+                                </span>
+
+                                <span className="bg-purple-50 text-purple-400 text-xs font-semibold px-3 py-1 rounded-full border border-purple-700">
+                                    {job.minSalary && job.maxSalary 
+                                        ? `£${job.minSalary} - £${job.maxSalary}` 
+                                        : "Salary not provided"} 
+                                </span>
+
+                            </div>
+                        </div>
+                    </a>
                 ))}
             </div>
         </div>
