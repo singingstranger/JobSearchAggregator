@@ -25,7 +25,10 @@ public class AdzunaJobService
             $"https://api.adzuna.com/v1/api/jobs/gb/search/1" +
             $"?app_id={appId}" +
             $"&app_key={appKey}" +
-            $"&what={Uri.EscapeDataString(request.Keyword)}";
+            $"&what={Uri.EscapeDataString(request.Keyword ?? "")}" +
+            $"&where={Uri.EscapeDataString(request.Location ?? "")}" +
+            $"&max_days_old={(request.DaysBack > 0 ? request.DaysBack : 3)}" +
+            $"&results_per_page={(request.PageSize > 0 ? request.PageSize : 10)}";
         
         var response = await _httpClient.GetAsync(url);
         if (!response.IsSuccessStatusCode)

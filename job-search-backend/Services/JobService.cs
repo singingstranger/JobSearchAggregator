@@ -39,7 +39,27 @@ public class JobService : IJobService
 
         var jobs = remotiveTask.Result
             .Concat(adzunaTask.Result);
-
+        
+        // Filter duplicates
+        jobs = jobs
+            .GroupBy(j => j.OriginalURL)
+            .Select(g => g.First());
+        
+        // Keyword filtering
+        if (!string.IsNullOrWhiteSpace(request.Keyword))
+        {
+            jobs = jobs.Where(j =>
+                j.Title.Contains(request.Keyword, StringComparison.OrdinalIgnoreCase) ||
+                j.Company.Contains(request.Keyword, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        // Filter location
+        if (!string.IsNullOrWhiteSpace(request.Location))
+        {
+            jobs = jobs.Where(j =>
+                j.Location.Contains(request.Location, StringComparison.OrdinalIgnoreCase));
+        }
+        
         // Filter by days back
         if (request.DaysBack.HasValue)
         {
@@ -47,6 +67,7 @@ public class JobService : IJobService
             jobs = jobs.Where(j => j.PostedDate >= cutoff);
         }
 
+        // Filter by salary
         if (request.MinSalary.HasValue)
         {
             jobs = jobs.Where(j =>
@@ -60,14 +81,13 @@ public class JobService : IJobService
                 j.MinSalary.HasValue &&
                 j.MinSalary.Value <= request.MaxSalary.Value);
         }
-        jobs = jobs
-            .GroupBy(j => new { j.Title, j.Company })
-            .Select(g => g.First());
         
+        // Sort by posted date
         jobs = jobs
             .OrderByDescending(j => j.PostedDate)
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize);
+
             
         _cache.Set(cacheKey, jobs, TimeSpan.FromMinutes(5));
         return jobs;
