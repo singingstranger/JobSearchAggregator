@@ -20,13 +20,4 @@ public class JobsController : ControllerBase
         var results = await _jobService.SearchJobsAsynch(request);
         return Ok(results);
     }
-
-/*[HttpGet("search")]
-    public async Task<IActionResult> Search(
-        [FromQuery] string keyword,
-        [FromQuery] string location)
-    {
-        var results = await _jobService.SearchJobsAsynch(keyword, location);
-        return Ok(results);
-    }*/
 }

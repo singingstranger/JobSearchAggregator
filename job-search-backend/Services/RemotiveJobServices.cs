@@ -57,15 +57,6 @@ public class RemotiveJobServices
         if (remotiveResponse == null)
             return Enumerable.Empty<JobDTO>();
         
-        var jobs = remotiveResponse.Jobs.AsEnumerable();
-        if (!string.IsNullOrWhiteSpace(request.Location))
-        {
-            jobs = jobs.Where(j =>
-                j.Candidate_Required_Location.Contains(
-                    request.Location,
-                    StringComparison.OrdinalIgnoreCase));
-        }
-
         return remotiveResponse.Jobs
             .Select(j => new JobDTO
             {
