@@ -1,6 +1,8 @@
+using JobSearchAPI.job_search_backend.Services;
 using JobSearchAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+var frontendUrl = builder.Configuration["FRONTEND_URL"] ?? "http://localhost:5173";
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -16,7 +18,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.WithOrigins(frontendUrl)
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

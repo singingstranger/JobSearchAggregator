@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import './App.css'
 
 type Job ={
@@ -29,7 +29,7 @@ function App(){
         setIsLoading(true);
         setError(null);
         try{
-            const response = await fetch(`http://localhost:5086/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=${daysBack}`
+            const response = await fetch(`/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=${daysBack}`
             );
             if(!response.ok)
             {
