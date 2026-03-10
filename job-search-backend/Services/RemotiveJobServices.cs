@@ -5,7 +5,7 @@ using JobSearchAPI.Models.Remotive;
 
 namespace JobSearchAPI.job_search_backend.Services;
 
-public class RemotiveJobServices
+public class RemotiveJobServices : IJobProvider
 {
     private readonly HttpClient _httpClient;
     

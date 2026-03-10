@@ -7,14 +7,12 @@ namespace JobSearchAPI.Services;
 
 public class JobService : IJobService
 {
-    private readonly RemotiveJobServices _remotiveJobServices;
-    private readonly AdzunaJobService _adzunaJobService;
+    private readonly IEnumerable<IJobProvider> _providers;
     private readonly IMemoryCache _cache;
     
-    public JobService(RemotiveJobServices remotiveJobServices, AdzunaJobService adzunaJobService, IMemoryCache cache)
+    public JobService(IEnumerable<IJobProvider> providers, IMemoryCache cache)
     {
-        _remotiveJobServices = remotiveJobServices;
-        _adzunaJobService = adzunaJobService;
+        _providers = providers ?? Enumerable.Empty<IJobProvider>();
         _cache = cache;
     }
     public async Task<IEnumerable<JobDTO>> SearchJobsAsynch(JobSearchRequest request)
@@ -32,14 +30,21 @@ public class JobService : IJobService
         {
             return cachedJobs;
         }
+        var tasks = _providers.Select(async p =>
+        {
+            try
+            {
+                return await p.SearchJobsAsync(request);
+            }
+            catch
+            {
+                return Enumerable.Empty<JobDTO>();
+            }
+        });
         
-        var remotiveTask = _remotiveJobServices.SearchJobsAsync(request);
-        var adzunaTask = _adzunaJobService.SearchJobsAsync(request);
+        await Task.WhenAll(tasks);
 
-        await Task.WhenAll(remotiveTask, adzunaTask);
-
-        var jobs = remotiveTask.Result
-            .Concat(adzunaTask.Result);
+        var jobs = tasks.SelectMany(t => t.Result);
         
         // Filter duplicates
         jobs = jobs

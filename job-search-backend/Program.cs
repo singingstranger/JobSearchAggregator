@@ -11,8 +11,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddScoped<RemotiveJobServices>();
-builder.Services.AddScoped<AdzunaJobService>();
+builder.Services.AddScoped<IJobProvider, RemotiveJobServices>();
+builder.Services.AddScoped<IJobProvider, AdzunaJobService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",

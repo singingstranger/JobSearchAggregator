@@ -1,11 +1,12 @@
 using System.Text.Json;
 using JobSearchAPI.Controllers;
+using JobSearchAPI.job_search_backend.Services;
 using JobSearchAPI.Models;
 using JobSearchAPI.Models.Adzuna;
 
 namespace JobSearchAPI.Services;
 
-public class AdzunaJobService
+public class AdzunaJobService : IJobProvider
 {
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
