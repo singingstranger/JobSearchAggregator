@@ -8,6 +8,7 @@ services:
       - Adzuna__AppId=${ADZUNA_APP_ID}
       - Adzuna__AppKey=${ADZUNA_APP_KEY}
       - FRONTEND_URL=http://frontend
+      - API_KEY=${API_KEY}
     ports:
       - "5000:80"
         

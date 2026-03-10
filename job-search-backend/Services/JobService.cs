@@ -38,6 +38,7 @@ public class JobService : IJobService
             }
             catch
             {
+                Console.WriteLine("A job board API is returning exceptions.");
                 return Enumerable.Empty<JobDTO>();
             }
         });

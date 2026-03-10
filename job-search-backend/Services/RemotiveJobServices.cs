@@ -8,11 +8,14 @@ namespace JobSearchAPI.job_search_backend.Services;
 public class RemotiveJobServices : IJobProvider
 {
     private readonly HttpClient _httpClient;
+    private static readonly ProviderRateLimiter _limiter =
+        new(TimeSpan.FromSeconds(5));
     
     public RemotiveJobServices(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
+    
     private (decimal? Min, decimal? Max) ParseSalary(string? salaryText)
     {
         if (string.IsNullOrWhiteSpace(salaryText))
@@ -44,8 +47,9 @@ public class RemotiveJobServices : IJobProvider
     
     public async Task<IEnumerable<JobDTO>> SearchJobsAsync(JobSearchRequest request)
     {
-        var url = $"https://remotive.com/api/remote-jobs?search={request.Keyword}";
+        var url = $"https://remotive.com/api/remote-jobs?search={Uri.EscapeDataString(request.Keyword ?? "")}";
         
+        await _limiter.WaitAsync();
         var response = await _httpClient.GetAsync(url);
         
         if(!response.IsSuccessStatusCode)
@@ -69,16 +73,16 @@ public class RemotiveJobServices : IJobProvider
 
                 return new JobDTO
                 {
-                    Title = j.Title,
-                    Company = j.Company,
-                    Location = j.Location,
+                    Title = j.Title?.Trim() ?? "Unknown job",
+                    Company = j.Company?.Trim() ?? "Unknown company",
+                    Location = j.Location?.Trim() ?? "Remote",
                     PostedDate = j.PublicationDate,
                     MinSalary = salary.Min,
                     MaxSalary = salary.Max,
-                    JobType = j.JobType,
+                    JobType = j.JobType?.Trim() ?? "Unknown type",
                     IsRemote = true,
                     Source = "Remotive",
-                    OriginalURL = j.Url
+                    OriginalURL = j.Url?.Trim() ?? "https://remotive.com"
                 };
             });
     }

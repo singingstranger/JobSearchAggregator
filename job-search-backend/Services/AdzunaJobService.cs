@@ -11,6 +11,9 @@ public class AdzunaJobService : IJobProvider
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     
+    private static readonly ProviderRateLimiter _limiter =
+        new(TimeSpan.FromSeconds(5));
+    
     public  AdzunaJobService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
@@ -31,6 +34,7 @@ public class AdzunaJobService : IJobProvider
             $"&max_days_old={(request.DaysBack > 0 ? request.DaysBack : 3)}" +
             $"&results_per_page={(request.PageSize > 0 ? request.PageSize : 10)}";
         
+        await _limiter.WaitAsync();
         var response = await _httpClient.GetAsync(url);
         if (!response.IsSuccessStatusCode)
             return Enumerable.Empty<JobDTO>();
@@ -52,20 +56,19 @@ public class AdzunaJobService : IJobProvider
         
         return filteredJobs
             .Select(j => new JobDTO
-                {
-                    Title = j.Title,
-                    Company = j.Company.Display_Name,
-                    Location = j.Location.Display_Name,
-                    PostedDate = j.Created,
-                    MinSalary = j.SalaryMin,
-                    MaxSalary = j.SalaryMax,
-                    JobType = j.ContractType,
-                    IsRemote = j.Location.Display_Name.Contains("Remote", StringComparison.OrdinalIgnoreCase),
-                    Source = "Adzuna",
-                    OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl) 
-                        ? "https://www.adzuna.co.uk/" 
-                        : j.RedirectUrl
-                }
-            );
+            {
+                Title = j.Title?.Trim() ?? "Unknown job",
+                Company = j.Company?.Display_Name?.Trim() ?? "Unknown company",
+                Location = j.Location?.Display_Name?.Trim() ?? "Remote",
+                PostedDate = j.Created,
+                MinSalary = j.SalaryMin,
+                MaxSalary = j.SalaryMax,
+                JobType = j.ContractType?.Trim() ?? "Unknown type",
+                IsRemote = j.Location?.Display_Name?.Contains("Remote", StringComparison.OrdinalIgnoreCase) ?? false,
+                Source = "Adzuna",
+                OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl) 
+                    ? "https://www.adzuna.co.uk/" 
+                    : j.RedirectUrl.Trim()
+            });
     }
 }
