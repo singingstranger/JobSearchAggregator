@@ -8,11 +8,14 @@ namespace JobSearchAPI.job_search_backend.Services;
 public class RemotiveJobServices : IJobProvider
 {
     private readonly HttpClient _httpClient;
+    private static readonly ProviderRateLimiter _limiter =
+        new(TimeSpan.FromSeconds(5));
     
     public RemotiveJobServices(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
+    
     private (decimal? Min, decimal? Max) ParseSalary(string? salaryText)
     {
         if (string.IsNullOrWhiteSpace(salaryText))
@@ -46,6 +49,7 @@ public class RemotiveJobServices : IJobProvider
     {
         var url = $"https://remotive.com/api/remote-jobs?search={request.Keyword}";
         
+        await _limiter.WaitAsync();
         var response = await _httpClient.GetAsync(url);
         
         if(!response.IsSuccessStatusCode)
