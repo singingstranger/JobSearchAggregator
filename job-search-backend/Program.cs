@@ -2,6 +2,7 @@ using JobSearchAPI.job_search_backend.Services;
 using JobSearchAPI.Services;
 using Microsoft.AspNetCore.RateLimiting;
 
+var useApiKey = false; //Set to true if you want to use API Key encryption 
 var builder = WebApplication.CreateBuilder(args);
 var frontendUrl = builder.Configuration["FRONTEND_URL"] ?? "http://localhost:5173";
 
@@ -32,13 +33,18 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("api", opt =>
     {
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 10;
-        opt.QueueLimit = 5;
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 1;
     });
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = 429; 
+        await context.HttpContext.Response.WriteAsync("Rate limit exceeded. Try again in 20 seconds.", cancellationToken);
+    };
 });
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Limits.MaxRequestBodySize = 1_000;
+    options.Limits.MaxRequestBodySize = 10_000;
 });
 
 var app = builder.Build();
@@ -51,7 +57,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-app.UseMiddleware<ApiKeyMiddleware>();
+
+if(useApiKey)
+    app.UseMiddleware<ApiKeyMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
