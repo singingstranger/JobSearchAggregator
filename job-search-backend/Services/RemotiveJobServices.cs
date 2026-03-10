@@ -3,7 +3,7 @@ using JobSearchAPI.Controllers;
 using JobSearchAPI.Models;
 using JobSearchAPI.Models.Remotive;
 
-namespace JobSearchAPI.Services;
+namespace JobSearchAPI.job_search_backend.Services;
 
 public class RemotiveJobServices
 {
@@ -27,7 +27,7 @@ public class RemotiveJobServices
         salaryText = salaryText.Replace("k", "000"); //because for some reason this keeps showing up
 
         var numbers = System.Text.RegularExpressions.Regex
-            .Matches(salaryText, @"\d+")
+            .Matches(salaryText, @"\d+(\.\d+)?")
             .Select(m => decimal.TryParse(m.Value, out var val) ? val : (decimal?)null)
             .Where(v => v.HasValue)
             .Select(v => v!.Value)
@@ -45,32 +45,41 @@ public class RemotiveJobServices
     public async Task<IEnumerable<JobDTO>> SearchJobsAsync(JobSearchRequest request)
     {
         var url = $"https://remotive.com/api/remote-jobs?search={request.Keyword}";
+        
         var response = await _httpClient.GetAsync(url);
+        
         if(!response.IsSuccessStatusCode)
             return Enumerable.Empty<JobDTO>();
 
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         var content = await response.Content.ReadAsStringAsync();
+
+        Console.WriteLine(content.Substring(0, Math.Min(2000, content.Length)));
+
         var remotiveResponse = JsonSerializer.Deserialize<RemotiveResponse>(content, options);
 
         if (remotiveResponse == null)
             return Enumerable.Empty<JobDTO>();
-        
+
         return remotiveResponse.Jobs
-            .Select(j => new JobDTO
+            .Select(j =>
             {
-                Title = j.Title,
-                Company = j.Company_Name,
-                Location = j.Candidate_Required_Location,
-                PostedDate = j.Publication_Date,
-                MinSalary = null,
-                MaxSalary = null,
-                JobType = j.JobType,
-                IsRemote = true,
-                Source = "Remotive",
-                OriginalURL = j.Url
+                var salary = ParseSalary(j.Salary);
+
+                return new JobDTO
+                {
+                    Title = j.Title,
+                    Company = j.Company,
+                    Location = j.Location,
+                    PostedDate = j.PublicationDate,
+                    MinSalary = salary.Min,
+                    MaxSalary = salary.Max,
+                    JobType = j.JobType,
+                    IsRemote = true,
+                    Source = "Remotive",
+                    OriginalURL = j.Url
+                };
             });
-        
     }
 }

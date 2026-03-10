@@ -1,4 +1,5 @@
 using JobSearchAPI.Controllers;
+using JobSearchAPI.job_search_backend.Services;
 using JobSearchAPI.Models;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -57,6 +58,7 @@ public class JobService : IJobService
         if (!string.IsNullOrWhiteSpace(request.Location))
         {
             jobs = jobs.Where(j =>
+                j.IsRemote ||
                 j.Location.Contains(request.Location, StringComparison.OrdinalIgnoreCase));
         }
         
