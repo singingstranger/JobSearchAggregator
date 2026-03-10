@@ -56,20 +56,19 @@ public class AdzunaJobService : IJobProvider
         
         return filteredJobs
             .Select(j => new JobDTO
-                {
-                    Title = j.Title,
-                    Company = j.Company.Display_Name,
-                    Location = j.Location.Display_Name,
-                    PostedDate = j.Created,
-                    MinSalary = j.SalaryMin,
-                    MaxSalary = j.SalaryMax,
-                    JobType = j.ContractType,
-                    IsRemote = j.Location.Display_Name.Contains("Remote", StringComparison.OrdinalIgnoreCase),
-                    Source = "Adzuna",
-                    OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl) 
-                        ? "https://www.adzuna.co.uk/" 
-                        : j.RedirectUrl
-                }
-            );
+            {
+                Title = j.Title?.Trim() ?? "Unknown job",
+                Company = j.Company?.Display_Name?.Trim() ?? "Unknown company",
+                Location = j.Location?.Display_Name?.Trim() ?? "Remote",
+                PostedDate = j.Created,
+                MinSalary = j.SalaryMin,
+                MaxSalary = j.SalaryMax,
+                JobType = j.ContractType?.Trim() ?? "Unknown type",
+                IsRemote = j.Location?.Display_Name?.Contains("Remote", StringComparison.OrdinalIgnoreCase) ?? false,
+                Source = "Adzuna",
+                OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl) 
+                    ? "https://www.adzuna.co.uk/" 
+                    : j.RedirectUrl.Trim()
+            });
     }
 }
