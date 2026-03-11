@@ -66,16 +66,16 @@ public class RemotiveJobServices : IJobProvider
             .Select(j =>
             {
                 var salary = ParseSalary(j.Salary);
-
+                var date = j.PublicationDate.ToUniversalTime();
                 return new JobDTO
                 {
-                    Title = j.Title,
-                    Company = j.Company,
-                    Location = j.Location,
-                    PostedDate = j.PublicationDate,
+                    Title = j.Title?.Trim() ?? "Unknown Job",
+                    Company = j.Company?.Trim() ?? "Unknown Company",
+                    Location = j.Location?.Trim() ?? "Unknown Location",
+                    PostedDate = date,
                     MinSalary = salary.Min,
                     MaxSalary = salary.Max,
-                    JobType = j.JobType,
+                    JobType = j.JobType?.Trim() ?? "Unknown Job Type",
                     IsRemote = true,
                     Source = "Remotive",
                     OriginalURL = j.Url
