@@ -55,16 +55,16 @@ public class AdzunaJobService : IJobProvider
                 {
                     Title = j.Title?.Trim() ?? "Unknown Job",
                     Company = j.Company.Display_Name?.Trim() ?? "Unknown Company",
-                    Location = j.Location.Display_Name?.Trim() ?? "Unknown Location",
+                    Location = j.Location.Display_Name?.Trim() ?? "Remote",
                     PostedDate = j.Created.ToUniversalTime(),
                     MinSalary = j.SalaryMin,
                     MaxSalary = j.SalaryMax,
                     JobType = j.ContractType?.Trim() ?? "Unknown ContractType",
-                    IsRemote = j.Location.Display_Name.Contains("Remote", StringComparison.OrdinalIgnoreCase),
+                    IsRemote = j.Location?.Display_Name?.Contains("Remote", StringComparison.OrdinalIgnoreCase) ?? false,
                     Source = "Adzuna",
                     OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl)
                         ? "https://www.adzuna.co.uk/"
-                        : j.RedirectUrl
+                        : j.RedirectUrl.Trim()
                 });
     }
 }

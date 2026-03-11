@@ -71,14 +71,14 @@ public class RemotiveJobServices : IJobProvider
                 {
                     Title = j.Title?.Trim() ?? "Unknown Job",
                     Company = j.Company?.Trim() ?? "Unknown Company",
-                    Location = j.Location?.Trim() ?? "Unknown Location",
+                    Location = j.Location?.Trim() ?? "Remote",
                     PostedDate = date,
                     MinSalary = salary.Min,
                     MaxSalary = salary.Max,
                     JobType = j.JobType?.Trim() ?? "Unknown Job Type",
                     IsRemote = true,
                     Source = "Remotive",
-                    OriginalURL = j.Url
+                    OriginalURL = j.Url.Trim()
                 };
             });
     }
