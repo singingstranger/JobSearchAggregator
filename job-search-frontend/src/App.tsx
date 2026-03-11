@@ -56,7 +56,7 @@ function App(){
                     Find Your Next Opportunity
                 </h1>
                 <p className="text-lg md:text-xl text-gray-700 mb-6">
-                    Browse thousands of jobs, filter by keyword and location, and discover your next role.
+                    Browse jobs, filter by keyword and location, and discover your next role.
                 </p>
                 <div className="mt-6 h-1 w-24 bg-blue-500 rounded-full mx-auto"></div>
                 

@@ -1,20 +1,22 @@
-version: "3.9"
-
 services:
   backend:
-    build: ./job-search-backend
+    build:
+      context: .
+      dockerfile: ./job-search-backend/Dockerfile
     container_name: job-search-backend
     environment:
       - Adzuna__AppId=${ADZUNA_APP_ID}
       - Adzuna__AppKey=${ADZUNA_APP_KEY}
       - FRONTEND_URL=http://frontend
     ports:
-      - "5000:80"
+      - "5080:8080"
         
   frontend:
-    build: ./job-search-frontend
+    build: 
+      context: ./job-search-frontend
+      dockerfile: Dockerfile
     container_name: job-search-frontend
     ports:
       - "3000:80"
     depends_on:
-      - job-search-backend
+      - backend
