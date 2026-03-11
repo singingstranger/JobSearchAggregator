@@ -17,5 +17,6 @@ RUN dotnet publish "./JobSearchAggregator.csproj" -c $BUILD_CONFIGURATION -o /ap
 
 FROM base AS final
 WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:8080
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "JobSearchAggregator.dll"]
