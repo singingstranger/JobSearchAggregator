@@ -11,6 +11,9 @@ public class AdzunaJobService : IJobProvider
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     
+    private static readonly ProviderRateLimiter _limiter =
+        new(TimeSpan.FromSeconds(5));
+    
     public  AdzunaJobService(HttpClient httpClient, IConfiguration configuration)
     {
         _httpClient = httpClient;
@@ -31,6 +34,7 @@ public class AdzunaJobService : IJobProvider
             $"&max_days_old={(request.DaysBack > 0 ? request.DaysBack : 3)}" +
             $"&results_per_page={(request.PageSize > 0 ? request.PageSize : 10)}";
         
+        await _limiter.WaitAsync();
         var response = await _httpClient.GetAsync(url);
         if (!response.IsSuccessStatusCode)
             return Enumerable.Empty<JobDTO>();
