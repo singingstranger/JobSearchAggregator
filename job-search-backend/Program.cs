@@ -57,12 +57,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-
-if(useApiKey)
-    app.UseMiddleware<ApiKeyMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseRateLimiter();
+app.MapGet("/health", () => Results.Ok("healthy"));
 
 app.Run();

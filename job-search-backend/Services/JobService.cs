@@ -52,6 +52,20 @@ public class JobService : IJobService
             .GroupBy(j => j.OriginalURL)
             .Select(g => g.First());
         
+        // Filter by days back
+        if (request.DaysBack.HasValue)
+        {
+            var cutoff = DateTime.UtcNow.AddDays(-request.DaysBack.Value);
+            jobs = jobs.Where(j =>
+            {
+                var posted = 
+                    j.PostedDate.Kind == DateTimeKind.Utc 
+                        ? j.PostedDate 
+                        : j.PostedDate.ToUniversalTime();
+                return posted >= cutoff;
+            });
+        }
+        
         // Keyword filtering
         if (!string.IsNullOrWhiteSpace(request.Keyword))
         {
@@ -66,13 +80,6 @@ public class JobService : IJobService
             jobs = jobs.Where(j =>
                 j.IsRemote ||
                 j.Location.Contains(request.Location, StringComparison.OrdinalIgnoreCase));
-        }
-        
-        // Filter by days back
-        if (request.DaysBack.HasValue)
-        {
-            var cutoff = DateTime.UtcNow.AddDays(-request.DaysBack.Value);
-            jobs = jobs.Where(j => j.PostedDate >= cutoff);
         }
 
         // Filter by salary

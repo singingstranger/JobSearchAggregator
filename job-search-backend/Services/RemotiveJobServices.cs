@@ -70,19 +70,19 @@ public class RemotiveJobServices : IJobProvider
             .Select(j =>
             {
                 var salary = ParseSalary(j.Salary);
-
+                var date = j.PublicationDate.ToUniversalTime();
                 return new JobDTO
                 {
-                    Title = j.Title?.Trim() ?? "Unknown job",
-                    Company = j.Company?.Trim() ?? "Unknown company",
+                    Title = j.Title?.Trim() ?? "Unknown Job",
+                    Company = j.Company?.Trim() ?? "Unknown Company",
                     Location = j.Location?.Trim() ?? "Remote",
-                    PostedDate = j.PublicationDate,
+                    PostedDate = date,
                     MinSalary = salary.Min,
                     MaxSalary = salary.Max,
-                    JobType = j.JobType?.Trim() ?? "Unknown type",
+                    JobType = j.JobType?.Trim() ?? "Unknown Job Type",
                     IsRemote = true,
                     Source = "Remotive",
-                    OriginalURL = j.Url?.Trim() ?? "https://remotive.com"
+                    OriginalURL = j.Url.Trim()
                 };
             });
     }
