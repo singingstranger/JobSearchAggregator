@@ -1,0 +1,28 @@
+
+app = 'jja-job-search-frontend'
+primary_region = 'lhr'
+
+[build]
+  # Tell Fly to use your local Dockerfile
+  dockerfile = "./job-search-frontend/Dockerfile"
+  context = "./job-search-frontend"
+
+[env]
+  VITE_BACKEND_URL = "https://jja-job-search-backend.fly.dev"
+
+[experimental]
+  allowed_public_ports = [80]          # The port exposed by nginx
+  auto_rollback = true
+
+[[services]]
+  internal_port = 80
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+[[vm]]
+  memory = '512mb'
+  cpus = 1
+  memory_mb = 512
