@@ -1,5 +1,6 @@
 import { useState } from "react";
 import './App.css'
+import { BACKEND_URL } from "./config";
 
 type Job ={
     title: string,
@@ -29,7 +30,7 @@ function App(){
         setIsLoading(true);
         setError(null);
         try{
-            const response = await fetch(`/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=${daysBack}`
+            const response = await fetch(`${BACKEND_URL}/api/jobs?keyword=${keyword}&location=${location}&page=1&pageSize=${daysBack}`
             );
             if(!response.ok)
             {
