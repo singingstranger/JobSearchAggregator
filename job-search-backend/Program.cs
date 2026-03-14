@@ -12,12 +12,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddMemoryCache();
 
-builder.Services.AddHttpClient<RemotiveJobServices>();
-builder.Services.AddHttpClient<AdzunaJobService>();
-
 builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddScoped<IJobProvider, RemotiveJobServices>();
-builder.Services.AddScoped<IJobProvider, AdzunaJobService>();
+builder.Services.AddHttpClient<IJobProvider, RemotiveJobServices>();
+builder.Services.AddHttpClient<IJobProvider, AdzunaJobService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",

@@ -66,7 +66,7 @@ public class AdzunaJobService : IJobProvider
                     JobType = j.ContractType?.Trim() ?? "Unknown ContractType",
                     IsRemote = j.Location?.Display_Name?.Contains("Remote", StringComparison.OrdinalIgnoreCase) ?? false,
                     Source = "Adzuna",
-                    OriginalURL = string.IsNullOrWhiteSpace(j.RedirectUrl)
+                    OriginalUrl = string.IsNullOrWhiteSpace(j.RedirectUrl)
                         ? "https://www.adzuna.co.uk/"
                         : j.RedirectUrl.Trim()
                 });

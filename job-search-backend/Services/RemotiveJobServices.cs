@@ -82,7 +82,7 @@ public class RemotiveJobServices : IJobProvider
                     JobType = j.JobType?.Trim() ?? "Unknown Job Type",
                     IsRemote = true,
                     Source = "Remotive",
-                    OriginalURL = j.Url.Trim()
+                    OriginalUrl = j.Url.Trim()
                 };
             });
     }

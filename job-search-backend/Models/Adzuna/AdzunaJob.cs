@@ -9,7 +9,7 @@ public class AdzunaJob
     public DateTime Created { get; set; }
     
     [JsonPropertyName("redirect_url")]
-    public string RedirectUrl { get; set; } 
+    public string RedirectUrl { get; set; } = string.Empty;
     
     [JsonPropertyName("salary_min")]
     public decimal? SalaryMin { get; set; }

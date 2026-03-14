@@ -26,30 +26,42 @@ public class JobService : IJobService
                        $"{request.MaxSalary}_" +
                        $"{request.DaysBack}";
 
-        if (_cache.TryGetValue(cacheKey, out IEnumerable<JobDTO> cachedJobs))
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<JobDTO>? cachedJobs) && cachedJobs != null)
         {
             return cachedJobs;
         }
-        var tasks = _providers.Select(async p =>
-        {
-            try
+        var tasks = _providers.Select(provider =>
+            Task.Run(async () =>
             {
-                return await p.SearchJobsAsync(request);
-            }
-            catch
-            {
-                Console.WriteLine("A job board API is returning exceptions.");
-                return Enumerable.Empty<JobDTO>();
-            }
-        });
-        
-        await Task.WhenAll(tasks);
+                try
+                {
+                    var timeout = Task.Delay(5000);
+                    var work = provider.SearchJobsAsync(request);
 
-        var jobs = tasks.SelectMany(t => t.Result);
+                    var finished = await Task.WhenAny(work, timeout);
+
+                    if (finished == timeout)
+                    {
+                        Console.WriteLine($"{provider.GetType().Name} timed out.");
+                        return Enumerable.Empty<JobDTO>();
+                    }
+
+                    return await work;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"{provider.GetType().Name} failed: {ex.Message}");
+                    return Enumerable.Empty<JobDTO>();
+                }
+            })
+        );
+
+        var results = await Task.WhenAll(tasks);
+        var jobs = results.SelectMany(j => j);
         
         // Filter duplicates
         jobs = jobs
-            .GroupBy(j => j.OriginalURL)
+            .GroupBy(j => j.OriginalUrl)
             .Select(g => g.First());
         
         // Filter by days back
