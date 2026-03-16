@@ -8,7 +8,7 @@ type Job ={
     location: string,
     postedDate: string,
     source:string,
-    originalURL: string,
+    originalUrl: string,
     minSalary?: number,
     maxSalary?: number,
     jobType?: string,
@@ -135,8 +135,8 @@ function App(){
                 )}
                 {jobs.map((job, index) => (
                     <a
-                        key={job.originalURL}
-                        href={job.originalURL}
+                        key={job.originalUrl}
+                        href={job.originalUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ animationDelay: `${index * 80}ms` }}
@@ -162,7 +162,6 @@ function App(){
                                 <p className="text-gray-500 text-sm">
                                     {job.location}
                                 </p>
-
                                 <p className="text-gray-400 text-sm mt-2">
                                     Posted: {job.postedDate
                                     ? new Date(job.postedDate).toLocaleDateString()
